@@ -16,26 +16,33 @@ def before_call(before_call_function):
 
     return wrapper
 
-def wrap_class(function):
-    """
-    wraps every method in a class with a function
-    """
+class ClassWrapper:
 
-    def class_wrapper(cls):
+    ignored_methods = [
+        '__dict__',
+        '__class__',
+        '__repr__',  # this has to be ignored otherwise the 'print' in wrapper keeps calling 'repr' recurisvely
+        '__new__',  # gotta figure out why this needs to be ignored, dunno why it needs to be
+    ]
+
+    @staticmethod
+    def wrap(function):
         """
-        Class decorator that wraps a class with the wrap function
+        wraps every method in a class with a function
         """
-        ignored_methods = [
-            '__dict__',
-            '__class__',
-            '__repr__',  # this has to be ignored otherwise the 'print' in wrapper keeps calling 'repr' recurisvely
-            '__new__',  # gotta figure out why this needs to be ignored, dunno why it needs to be
-        ]
 
-        for name in [x for x in dir(cls) if x not in ignored_methods]:
-            method = getattr(cls, name)
-            setattr(cls, name, function(method))
+        def class_wrapper(cls):
+            """
+            Class decorator that wraps a class with the wrap function
+            """
 
-        return cls
+            valid_methods = [x for x in dir(cls)
+                if x not in ClassWrapper.ignored_methods
+                ]
+            for name in valid_methods:
+                method = getattr(cls, name)
+                setattr(cls, name, function(method))
 
-    return class_wrapper
+            return cls
+
+        return class_wrapper

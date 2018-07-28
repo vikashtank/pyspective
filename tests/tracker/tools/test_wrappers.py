@@ -48,7 +48,7 @@ class TestWrapClass(unittest.TestCase):
 
     def get_wrapped_class(self, a, b):
 
-        @wrappers.wrap_class(wrappers.before_call(self.store_args))
+        @wrappers.ClassWrapper.wrap(wrappers.before_call(self.store_args))
         class Dummy:
 
             def __init__(self, a, b):
