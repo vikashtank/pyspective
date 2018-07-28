@@ -1,8 +1,3 @@
-"""
-Tracker programme
-
-by Vikash Tank
-"""
 import inspect
 
 
