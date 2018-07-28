@@ -1,5 +1,5 @@
 import unittest
-from tracker.tools import wrappers
+from tracker.tools.wrappers import FunctionWrapper, ClassWrapper
 
 
 class TestBeforeCall(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestBeforeCall(unittest.TestCase):
 
     def get_test_function(self):
 
-        @wrappers.before_call(self.store_args)
+        @FunctionWrapper.before_call(self.store_args)
         def add(a, b):
             return a + b
 
@@ -48,7 +48,7 @@ class TestWrapClass(unittest.TestCase):
 
     def get_wrapped_class(self, a, b):
 
-        @wrappers.ClassWrapper.wrap(wrappers.before_call(self.store_args))
+        @ClassWrapper.wrap(FunctionWrapper.before_call(self.store_args))
         class Dummy:
 
             def __init__(self, a, b):
