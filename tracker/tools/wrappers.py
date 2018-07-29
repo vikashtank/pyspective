@@ -18,6 +18,22 @@ class FunctionWrapper:
 
         return wrapper
 
+    @staticmethod
+    def wrap(before_call_function, after_call_function):
+
+        def wrapper(function):
+            def inner_wrapper(*args, **kwargs):
+                before_call_function(function, *args, **kwargs)
+                output =  function(*args, **kwargs)
+                try:
+                    return after_call_function(function, *output)
+                except TypeError:
+                    return after_call_function(function, output)[0]
+
+            return inner_wrapper
+
+        return wrapper
+
 class ClassWrapper:
 
     ignored_methods = [

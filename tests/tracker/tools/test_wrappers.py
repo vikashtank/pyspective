@@ -35,6 +35,62 @@ class TestBeforeCall(unittest.TestCase):
         result = self.get_test_function()(5, 4)
         self.assertEqual(self.kwargs, {})
 
+class TestFunctionWrap(unittest.TestCase):
+
+    def setUp(self):
+        self.in_args = None
+        self.out_args = None
+        self.in_kwargs = None
+
+    def tearDown(self):
+        pass
+
+    def store_args(self, function, *args, **kwargs):
+        self.in_args = args
+        self.in_kwargs = kwargs
+
+    def store_output(self, function, *args):
+        self.out_args = args
+        return args
+
+    def get_test_function(self):
+        @FunctionWrapper.wrap(self.store_args, self.store_output)
+        def add(a, b):
+            return a + b
+
+        return add
+
+    def get_test_function_multi_output(self):
+        @FunctionWrapper.wrap(self.store_args, self.store_output)
+        def add(a, b):
+            return a, b
+
+        return add
+
+    def test_before_call_in_args(self):
+        result = self.get_test_function()(5, 4)
+        self.assertEqual(self.in_args, (5, 4))
+
+    def test_before_call_result(self):
+        result = self.get_test_function()(5, 4)
+        self.assertEqual(result, 9)
+
+    def test_before_call_in_kwargs(self):
+        result = self.get_test_function()(5, 4)
+        self.assertEqual(self.in_kwargs, {})
+
+    def test_after_call_output(self):
+        result = self.get_test_function()(5, 4)
+        self.assertEqual(self.out_args[0], 9)
+
+    def test_after_call_multi_output(self):
+        result = self.get_test_function_multi_output()(5, 4)
+        self.assertEqual(self.out_args, (5, 4))
+
+    def test_after_call_multi_result(self):
+        result = self.get_test_function_multi_output()(5, 4)
+        self.assertEqual(self.out_args, (5, 4))
+
 class TestWrapClass(unittest.TestCase):
 
     def setUp(self):
