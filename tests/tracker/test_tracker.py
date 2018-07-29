@@ -1,27 +1,36 @@
 import unittest
-from tracker import TrackInt
+from tracker.type_trackers import TrackInt
+from tracker import Tracker
 
 
-class TestTrackInt(unittest.TestCase):
+class TestTrackerSimpleMethod(unittest.TestCase):
 
     def setUp(self):
-        self.track_int = TrackInt(5)
+        pass
 
     def tearDown(self):
         pass
 
-    def test01_str(self):
-        self.assertEqual(str(self.track_int), "5")
+    def get_simple_method(self):
 
-    def test01_is_int(self):
-        self.assertTrue(self.track_int == 5)
+        @Tracker.track
+        def simple_method(a, b, c):
+            return a + b + c
 
+        return simple_method
 
-    def test01_str(self):
-        pass
+    def test_result_value(self):
+        result = self.get_simple_method()(3, 4, 5)
+        self.assertEqual(result, 12)
 
-    def test01_str(self):
-        pass
+    def _test_result_type(self):
+        result = self.get_simple_method()(3, 4, 5)
+        self.assertIsInstance(result, type(TrackInt))
+
+    def _test_log_length(self):
+        self.get_simple_method()(3, 4, 5)
+        self.assertEqual(len(Tracker.log), 2)
+
 
 if __name__ == "__main__":
     unittest.main()
