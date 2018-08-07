@@ -1,7 +1,7 @@
 
 import inspect
 
-from ..tools.wrappers import ClassWrapper
+from ..tools.wrappers import ClassWrapper, FunctionWrapper
 
 
 def track_variable(value):
@@ -31,11 +31,23 @@ def track_variable(value):
         raise ValueError("unknown return type: {0}".format(type(value)))
 
 
-class Tracker(ClassWrapper):
+class FunctionTracker(FunctionWrapper):
+
+    @staticmethod
+    def track(function):
+
+        def before_call(function, *args, **kwargs):
+            #create action
+            pass
+
+        def after_call(function, *args):
+            #create action
+            return args
+
+        return FunctionWrapper.wrap(before_call, after_call)(function)
 
 
-    def __init__(self):
-        pass
+class ClassTracker(ClassWrapper):
 
     @staticmethod
     def wrap(cls):
@@ -61,21 +73,21 @@ class Track:
     pass
 
 
-@Tracker.wrap
+@ClassTracker.wrap
 class TrackInt(int, Track):
 
     def __new__(cls, args):
         return super().__new__(cls, args)
 
 
-@Tracker.wrap
+@ClassTracker.wrap
 class TrackStr(str, Track):
 
     def __new__(cls, args):
         return super().__new__(cls, args)
 
 
-@Tracker.wrap
+@ClassTracker.wrap
 class TrackList(list, Track):
 
     def __new__(cls, args):

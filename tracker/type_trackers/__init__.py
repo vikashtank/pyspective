@@ -1,1 +1,1 @@
-from .class_tracker import TrackInt, track_variable
+from .type_trackers import TrackInt, track_variable, FunctionTracker
